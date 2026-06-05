@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일정 메모 앱</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4670d4 0%, #5bb5d8 40%, #7bc3a2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #222;
+        }
+
+        .app-card {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 34px;
+            margin-bottom: 14px;
+            color: #1d2b4f;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #556b87;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+
+        .form-row .inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #41506c;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        input[type="text"], input[type="date"], input[type="time"], textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d7dce8;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fff;
+            color: #2b3a55;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        textarea:focus {
+            border-color: #7ab2ff;
+            box-shadow: 0 0 0 4px rgba(122, 178, 255, 0.14);
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        }
+
+        button.primary {
+            background: #2269f0;
+            color: #fff;
+            flex: 1;
+        }
+
+        button.secondary {
+            background: #eef4ff;
+            color: #315d96;
+            flex: 1;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .memo-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .memo-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 14px;
+            padding: 18px 22px;
+            border-radius: 16px;
+            background: #f6f9ff;
+            margin-bottom: 14px;
+            box-shadow: inset 0 0 0 1px rgba(57, 82, 146, 0.06);
+        }
+
+        .memo-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .memo-title {
+            font-weight: 700;
+            color: #1f2a44;
+            font-size: 16px;
+        }
+
+        .memo-meta {
+            color: #5b6c88;
+            font-size: 14px;
+        }
+
+        .memo-text {
+            color: #3e4e74;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .memo-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .memo-actions button {
+            background: transparent;
+            color: #c24d4d;
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+
+        .memo-summary {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 24px;
+            color: #2d405b;
+            font-size: 14px;
+        }
+
+        .saved-note {
+            color: #117a8b;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-card">
+        <h1>일정 메모 앱</h1>
+        <p class="subtitle">오늘의 일정과 메모를 기록하고 브라우저에 저장하세요.</p>
+
+        <div class="form-row">
+            <div>
+                <label for="title-input">일정 이름</label>
+                <input type="text" id="title-input" placeholder="예: 회의, 운동, 생일 준비">
+            </div>
+            <div class="inline">
+                <div>
+                    <label for="date-input">날짜</label>
+                    <input type="date" id="date-input">
+                </div>
+                <div>
+                    <label for="time-input">시간</label>
+                    <input type="time" id="time-input">
+                </div>
+            </div>
+            <div>
+                <label for="memo-input">메모</label>
+                <textarea id="memo-input" placeholder="세부 내용을 입력하세요."></textarea>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button class="primary" id="save-button"><i class="fas fa-save"></i> 메모 저장</button>
+            <button class="secondary" id="clear-button"><i class="fas fa-trash-alt"></i> 입력 초기화</button>
+        </div>
+
+        <div class="memo-summary">
+            <div>총 메모: <span id="total-count">0</span></div>
+            <div>저장된 일정은 자동으로 로컬에 저장됩니다.</div>
+        </div>
+
+        <ul class="memo-list" id="memo-list"></ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleInput = document.getElementById('title-input');
+            const dateInput = document.getElementById('date-input');
+            const timeInput = document.getElementById('time-input');
+            const memoInput = document.getElementById('memo-input');
+            const saveButton = document.getElementById('save-button');
+            const clearButton = document.getElementById('clear-button');
+            const memoList = document.getElementById('memo-list');
+            const totalCount = document.getElementById('total-count');
+            const STORAGE_KEY = 'scheduleMemoAppItems';
+
+            function getSavedMemos() {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            function saveMemos(items) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+            }
+
+            function formatDate(dateString) {
+                if (!dateString) return '날짜 미등록';
+                const date = new Date(dateString);
+                return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            }
+
+            function updateCount(items) {
+                totalCount.textContent = items.length;
+            }
+
+            function renderMemos(items) {
+                memoList.innerHTML = '';
+                if (items.length === 0) {
+                    const empty = document.createElement('li');
+                    empty.className = 'memo-item';
+                    empty.innerHTML = '<div class="memo-info"><p class="memo-title">저장된 일정이 없습니다.</p><p class="memo-meta">새로운 일정을 추가해보세요.</p></div>';
+                    memoList.appendChild(empty);
+                    return;
+                }
+
+                items.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'memo-item';
+                    li.innerHTML = `
+                        <div class="memo-info">
+                            <p class="memo-title">${item.title || '제목 없음'}</p>
+                            <p class="memo-meta">${formatDate(item.date)} ${item.time || ''}</p>
+                            <p class="memo-text">${item.memo || '메모 내용 없음'}</p>
+                        </div>
+                        <div class="memo-actions">
+                            <button data-index="${index}"><i class="fas fa-trash-alt"></i> 삭제</button>
+                        </div>
+                    `;
+                    memoList.appendChild(li);
+                });
+            }
+
+            function clearInputs() {
+                titleInput.value = '';
+                dateInput.value = '';
+                timeInput.value = '';
+                memoInput.value = '';
+                titleInput.focus();
+            }
+
+            function loadMemos() {
+                const items = getSavedMemos();
+                renderMemos(items);
+                updateCount(items);
+            }
+
+            saveButton.addEventListener('click', () => {
+                const title = titleInput.value.trim();
+                const date = dateInput.value;
+                const time = timeInput.value;
+                const memo = memoInput.value.trim();
+
+                if (!title && !memo) {
+                    alert('일정 이름 또는 메모 내용을 입력해주세요.');
+                    return;
+                }
+
+                const items = getSavedMemos();
+                items.push({ title, date, time, memo, created: new Date().toISOString() });
+                saveMemos(items);
+                renderMemos(items);
+                updateCount(items);
+                clearInputs();
+            });
+
+            clearButton.addEventListener('click', () => {
+                clearInputs();
+            });
+
+            memoList.addEventListener('click', (event) => {
+                const button = event.target.closest('button[data-index]');
+                if (!button) return;
+
+                const index = Number(button.dataset.index);
+                const items = getSavedMemos();
+                items.splice(index, 1);
+                saveMemos(items);
+                renderMemos(items);
+                updateCount(items);
+            });
+
+            loadMemos();
+        });
+    </script>
+</body>
+</html>
